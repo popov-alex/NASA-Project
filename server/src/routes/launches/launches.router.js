@@ -1,6 +1,12 @@
 import express from 'express';
-import { getAllHistoricLaunches } from './launches.controller.js';
+import {
+  httpAbortLaunch,
+  httpGetAllHistoricLaunches,
+  httpPostNewLauch,
+} from './launches.controller.js';
 
 export const launchesRouter = express.Router();
 
-launchesRouter.get('/launches', getAllHistoricLaunches);
+launchesRouter.get('/', httpGetAllHistoricLaunches);
+launchesRouter.post('/', httpPostNewLauch);
+launchesRouter.delete('/:id', httpAbortLaunch);

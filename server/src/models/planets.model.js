@@ -4,8 +4,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// const __filename = fileURLToPath(import.meta.url || '');
+// const __dirname = dirname(__filename);
 
 export const planets = [];
 
@@ -21,7 +21,7 @@ function isPlanetHabitable(planet) {
 export const loadPlanets = () => {
   return new Promise((resolve, reject) => {
     fs.createReadStream(
-      path.join(__dirname, '..', '..', 'data', 'kepler_data.csv')
+      path.join(process.cwd(), 'data', 'kepler_data.csv')
     )
       .pipe(
         parse({
@@ -40,3 +40,5 @@ export const loadPlanets = () => {
       });
   });
 };
+
+export const getAllPlanets = () => planets;

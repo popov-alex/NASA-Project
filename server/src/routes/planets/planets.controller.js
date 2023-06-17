@@ -1,3 +1,4 @@
-import { planets } from '../../models/planets.model.js';
+import { getAllPlanets } from '../../models/planets.model.js';
 
-export const getAllPlanets = (_req, res) => res.status(200).json(planets);
+export const httpGetAllPlanets = (_req, res) =>
+  res.status(200).json(getAllPlanets());
