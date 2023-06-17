@@ -16,11 +16,11 @@ export const httpPostNewLauch = (req, res) => {
     !newLaunch.launchDate ||
     !newLaunch.rocket
   ) {
-    return res.status(400).json({
+    return res.status(401).json({
       error: 'Complete all fields',
     });
   } else if (!isNaN(newLaunch.launchDate)) {
-    return res.status(400).json({
+    return res.status(401).json({
       error: 'Please provide the correct date',
     });
   }
