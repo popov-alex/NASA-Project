@@ -7,7 +7,7 @@ import {
 export const httpGetAllHistoricLaunches = (_req, res) =>
   res.status(200).json(getAllHistoricLaunches());
 
-export const httpPostNewLauch = (req, res) => {
+export const httpPostNewLaunch = (req, res) => {
   const newLaunch = req.body;
 
   if (

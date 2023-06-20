@@ -1,13 +1,8 @@
 import { parse } from 'csv-parse';
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
 
-// const __filename = fileURLToPath(import.meta.url || '');
-// const __dirname = dirname(__filename);
-
-export const planets = [];
+import { planets } from './planets.mongo.js';
 
 function isPlanetHabitable(planet) {
   return (
@@ -18,27 +13,41 @@ function isPlanetHabitable(planet) {
   );
 }
 
+export const savePlanets = async (planet) => {
+  try {
+    await planets.updateOne(
+      { keplerName: planet.kepler_name },
+      { keplerName: planet.kepler_name },
+      { upsert: true }
+    );
+  } catch (err) {
+    console.log(`Could not save ${err}`);
+  }
+};
+
 export const loadPlanets = () => {
   return new Promise((resolve, reject) => {
-    fs.createReadStream(
-      path.join(process.cwd(), 'data', 'kepler_data.csv')
-    )
+    fs.createReadStream(path.join(process.cwd(), 'data', 'kepler_data.csv'))
       .pipe(
         parse({
           comment: '#',
           columns: true,
         })
       )
-      .on('data', (data) => isPlanetHabitable(data) && planets.push(data))
+      .on(
+        'data',
+        async (data) => isPlanetHabitable(data) && (await savePlanets(data))
+      )
       .on('error', (err) => {
-        console.log('Error occured', err);
+        console.log('Error occurred', err);
         reject(err);
       })
-      .on('end', () => {
-        console.log(`We found ${planets.length} planets habitable!`);
+      .on('end', async () => {
+        const numberOfPlanet = (await getAllPlanets()).length;
+        console.log(`We found ${numberOfPlanet} planets habitable!`);
         resolve();
       });
   });
 };
 
-export const getAllPlanets = () => planets;
+export const getAllPlanets = () => planets.find({}, { _id: 0, __v: 0 });

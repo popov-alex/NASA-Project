@@ -14,7 +14,7 @@ import { launchesRouter } from './routes/launches/launches.router.js';
 
 export const app = express();
 
-app.use(morgan('short'));
+app.use(morgan('common'));
 app.use(express.json());
 app.use(
   cors({

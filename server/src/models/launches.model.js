@@ -1,10 +1,8 @@
-//its obviously not the best data sctructure here, but I decided to follow the course just for the sake of curiousity. a more appopriate would be {}[]
+import { launches } from './launches.mongo.js';
 
-export const launches = new Map();
+const DEFAULT_LAUNCH_NUM = 100;
 
-let latestFlightNumber = 100;
-
-const launch = {
+const defaultLaunch = {
   flightNumber: 100,
   launchDate: new Date('June 27, 2023'),
   mission: 'Landing on Marse',
@@ -15,20 +13,37 @@ const launch = {
   target: 'Kepler 442 b',
 };
 
-launches.set(launch.flightNumber, launch);
+launches.updateOne(defaultLaunch);
 
-export const getAllHistoricLaunches = () => Array.from(launches.values());
+export const getAllHistoricLaunches = () => launches.find({});
 
-export const postNewLaunch = (incomingLaunch) => {
-  latestFlightNumber++;
-  launches.set(latestFlightNumber, {
+const getLatestFlightNumber = async () => {
+  const latestLaunch = await launches.findOne().sort(-flightNumber);
+
+  if (!latestLaunch) {
+    return DEFAULT_LAUNCH_NUM;
+  }
+
+  return latestLaunch.flightNumber;
+};
+
+const getNextFlightNumber = async () => {
+  const latestLaunch = await getLatestFlightNumber();
+
+  return latestLaunch.flightNumber++;
+};
+
+export const postNewLaunch = async (incomingLaunch) => {
+  const newLaunch = {
     ...incomingLaunch,
-    flightNumber: latestFlightNumber,
-    customers: launch.customers,
+    flightNumber: getNextFlightNumber(),
+    customers: defaultLaunch.customers,
     success: true,
     upcoming: true,
     launchDate: new Date(incomingLaunch.launchDate),
-  });
+  };
+
+  await launches.updateOne({flightNumber: newLaunch.flightNumber}, newLaunch, { upsert: true });
 };
 
 export const abortLaunch = (id) => {
