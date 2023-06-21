@@ -41,6 +41,6 @@ export const httpAbortLaunch = async (req, res) => {
   }
 
   return res.status(200).json({
-    success: `Successfully aborted launch with id ${id}`,
+    success: `Successfully aborted launch with flightNumber ${id}`,
   });
 };
