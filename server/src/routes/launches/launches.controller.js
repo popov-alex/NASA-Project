@@ -34,6 +34,13 @@ export const httpAbortLaunch = async (req, res) => {
   const id = +req.params.id;
 
   const aborted = await abortLaunch(id);
+  if (!aborted) {
+    return res.send(400).json({
+      error: 'Launch was not aborted',
+    });
+  }
 
-  res.status(200).json(aborted);
+  return res.status(200).json({
+    success: `Successfully aborted launch with id ${id}`,
+  });
 };

@@ -11,16 +11,11 @@ const defaultLaunch = {
   customers: ['Kris', 'Lena'],
   success: true,
   upcoming: true,
-  target: 'Kepler 442 b',
+  target: 'Kepler-442 b',
 };
 
 const saveLaunch = async (launch) => {
-  console.log(launch)
-  console.log(planets)
-  
-  
-  const isExistingPlanet = await planets.findOne({ target: launch.target });
-
+  const isExistingPlanet = await planets.findOne({ keplerName: launch.target });
 
   if (!isExistingPlanet) {
     throw new Error("Planet's name should be from the approved list");
@@ -65,8 +60,6 @@ export const postNewLaunch = async (incomingLaunch) => {
     ...incomingLaunch,
   };
 
-  console.log('newLaunch', newLaunch);
-
   try {
     await saveLaunch(newLaunch);
   } catch (err) {
@@ -75,10 +68,10 @@ export const postNewLaunch = async (incomingLaunch) => {
 };
 
 export const abortLaunch = async (id) => {
- const abortedLaunch = await launches.updateOne(
-  {flightNumber: id},
-  {$set: {upcoming: false, success: false}}
-  )
+  const abortedLaunch = await launches.updateOne(
+    { flightNumber: id },
+    { upcoming: false, success: false }
+  );
 
-  return abortedLaunch;
+  return abortedLaunch.modifiedCount === 1
 };
