@@ -4,10 +4,10 @@ import {
   postNewLaunch,
 } from '../../models/launches.model.js';
 
-export const httpGetAllHistoricLaunches = (_req, res) =>
-  res.status(200).json(getAllHistoricLaunches());
+export const httpGetAllHistoricLaunches = async (_req, res) =>
+  res.status(200).json(await getAllHistoricLaunches());
 
-export const httpPostNewLaunch = (req, res) => {
+export const httpPostNewLaunch = async (req, res) => {
   const newLaunch = req.body;
 
   if (
@@ -25,15 +25,15 @@ export const httpPostNewLaunch = (req, res) => {
     });
   }
 
-  postNewLaunch(newLaunch);
+  await postNewLaunch(newLaunch);
 
   return res.status(201).json(newLaunch);
 };
 
-export const httpAbortLaunch = (req, res) => {
+export const httpAbortLaunch = async (req, res) => {
   const id = +req.params.id;
 
-  const aborted = abortLaunch(id);
+  const aborted = await abortLaunch(id);
 
   res.status(200).json(aborted);
 };
