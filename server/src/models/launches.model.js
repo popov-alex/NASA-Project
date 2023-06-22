@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 import { launches } from './launches.mongo.js';
 import { planets } from './planets.mongo.js';
 
@@ -26,6 +28,29 @@ const saveLaunch = async (launch) => {
 };
 
 saveLaunch(defaultLaunch);
+
+// const SPACEX_LAUNCHES_ENDPOINT = 'https://api.spacexdata.com/v4/launches/query';
+
+// export const getSpaceXFlights = async () => {
+//   const response = await axios.get(SPACEX_LAUNCHES_ENDPOINT, {
+//     query: {},
+//     options: {
+//       populate: [
+//         {
+//           path: 'rocket',
+//           select: {
+//             name: 1,
+//           },
+//           path: 'payloads',
+//           select: {
+//             customers: 1,
+//           },
+//         },
+//       ],
+//     },
+//   });
+//   console.log(response.data);
+// };
 
 export const getAllHistoricLaunches = () =>
   launches.find({}, { _id: 0, __v: 0 });
@@ -73,5 +98,5 @@ export const abortLaunch = async (id) => {
     { upcoming: false, success: false }
   );
 
-  return abortedLaunch.modifiedCount === 1
+  return abortedLaunch.modifiedCount === 1;
 };
