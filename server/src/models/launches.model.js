@@ -17,11 +17,6 @@ const defaultLaunch = {
 };
 
 const saveLaunch = async (launch) => {
-  const isExistingPlanet = await planets.findOne({ keplerName: launch.target });
-
-  if (!isExistingPlanet) {
-    throw new Error("Planet's name should be from the approved list");
-  }
   await launches.updateOne({ flightNumber: launch.flightNumber }, launch, {
     upsert: true,
   });
@@ -29,31 +24,60 @@ const saveLaunch = async (launch) => {
 
 saveLaunch(defaultLaunch);
 
-// const SPACEX_LAUNCHES_ENDPOINT = 'https://api.spacexdata.com/v4/launches/query';
+const SPACEX_LAUNCHES_ENDPOINT = 'https://api.spacexdata.com/v4/launches/query';
 
-// export const getSpaceXFlights = async () => {
-//   const response = await axios.get(SPACEX_LAUNCHES_ENDPOINT, {
-//     query: {},
-//     options: {
-//       populate: [
-//         {
-//           path: 'rocket',
-//           select: {
-//             name: 1,
-//           },
-//           path: 'payloads',
-//           select: {
-//             customers: 1,
-//           },
-//         },
-//       ],
-//     },
-//   });
-//   console.log(response.data);
-// };
+export const getSpaceXFlights = async () => {
+  const response = await axios.post(SPACEX_LAUNCHES_ENDPOINT, {
+    query: {},
+    options: {
+      limit: 20,
+      populate: [
+        {
+          path: 'rocket',
+          select: {
+            name: 1,
+          },
+        },
+        {
+          path: 'payloads',
+          select: {
+            customers: 1,
+          },
+        },
+      ],
+    },
+  });
 
-export const getAllHistoricLaunches = () =>
-  launches.find({}, { _id: 0, __v: 0 });
+  if (response.status !== 200) {
+    console.error({
+      error: 'Not able to load SpaceX launches',
+    });
+    throw new Error('Problem loading SpaceX launches');
+  }
+
+  response.data.docs.map(async (doc) => {
+    const customers = doc.payloads.flatMap((payload) => payload.customers);
+
+    const launch = {
+      flightNumber: doc.flight_number,
+      launchDate: doc.date_local,
+      mission: doc.name,
+      rocket: doc.rocket.name,
+      customers,
+      success: doc.success,
+      upcoming: doc.upcoming,
+    };
+
+    await saveLaunch(launch);
+  });
+};
+
+export const getAllHistoricLaunches = (pageNum, pageSize) =>
+  launches
+    .find({}, { _id: 0, __v: 0 })
+    .sort('flightNumber')
+    .skip(pageNum)
+    .limit(pageSize);
 
 const getLatestFlightNumber = async () => {
   const latestLaunch = await launches.findOne().sort('-flightNumber');
@@ -76,6 +100,14 @@ const getNextFlightNumber = async () => {
 };
 
 export const postNewLaunch = async (incomingLaunch) => {
+  const isExistingPlanet = await planets.findOne({
+    keplerName: incomingLaunch.target,
+  });
+
+  if (!isExistingPlanet) {
+    throw new Error("Planet's name should be from the approved list");
+  }
+
   const newLaunch = {
     flightNumber: await getNextFlightNumber(),
     customers: defaultLaunch.customers,

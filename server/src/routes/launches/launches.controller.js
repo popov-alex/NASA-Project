@@ -3,9 +3,15 @@ import {
   getAllHistoricLaunches,
   postNewLaunch,
 } from '../../models/launches.model.js';
+import { getPagination } from '../../services/queryHelpers.js';
 
-export const httpGetAllHistoricLaunches = async (_req, res) =>
-  res.status(200).json(await getAllHistoricLaunches());
+export const httpGetAllHistoricLaunches = async (req, res) => {
+  const { size, num } = req.query;
+
+  const { pageSkip, pageSize } = getPagination(size, num);
+
+  res.status(200).json(await getAllHistoricLaunches(pageSkip, pageSize));
+};
 
 export const httpPostNewLaunch = async (req, res) => {
   const newLaunch = req.body;

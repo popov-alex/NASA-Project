@@ -43,8 +43,9 @@ export const loadPlanets = () => {
         reject(err);
       })
       .on('end', async () => {
-        const numberOfPlanet = (await getAllPlanets()).length;
-        console.log(`We found ${numberOfPlanet} planets habitable!`);
+        const numberOfPlanets = await getAllPlanets();
+        numberOfPlanets &&
+          console.log(`We found ${numberOfPlanets.length} planets habitable!`);
         resolve();
       });
   });

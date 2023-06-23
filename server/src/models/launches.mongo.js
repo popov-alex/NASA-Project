@@ -12,7 +12,9 @@ const launchesSchema = new mongoose.Schema({
 });
 
 Object.keys(launchesSchema.paths).forEach((path) => {
-  launchesSchema.path(path).required(true);
+  if(path !== 'target'){
+  launchesSchema.path(path).required(true)
+}
 });
 
 export const launches = mongoose.model('Launch', launchesSchema)
