@@ -14,8 +14,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.abortLaunch = exports.postNewLaunch = exports.getAllHistoricLaunches = exports.getSpaceXFlights = void 0;
 const axios_1 = __importDefault(require("axios"));
-const launches_mongo_js_1 = require("./launches.mongo.js");
-const planets_mongo_js_1 = require("./planets.mongo.js");
+const launches_mongo_1 = require("./launches.mongo");
+const planets_mongo_1 = require("./planets.mongo");
+const SPACEX_LAUNCHES_ENDPOINT = 'https://api.spacexdata.com/v4/launches/query';
 const DEFAULT_LAUNCH_NUM = 100;
 const defaultLaunch = {
     flightNumber: 100,
@@ -28,12 +29,11 @@ const defaultLaunch = {
     target: 'Kepler-442 b',
 };
 const saveLaunch = (launch) => __awaiter(void 0, void 0, void 0, function* () {
-    yield launches_mongo_js_1.launches.updateOne({ flightNumber: launch.flightNumber }, launch, {
+    yield launches_mongo_1.launches.updateOne({ flightNumber: launch.flightNumber }, launch, {
         upsert: true,
     });
 });
 saveLaunch(defaultLaunch);
-const SPACEX_LAUNCHES_ENDPOINT = 'https://api.spacexdata.com/v4/launches/query';
 const getSpaceXFlights = () => __awaiter(void 0, void 0, void 0, function* () {
     const response = yield axios_1.default.post(SPACEX_LAUNCHES_ENDPOINT, {
         query: {},
@@ -76,28 +76,28 @@ const getSpaceXFlights = () => __awaiter(void 0, void 0, void 0, function* () {
     }));
 });
 exports.getSpaceXFlights = getSpaceXFlights;
-const getAllHistoricLaunches = (pageNum, pageSize) => launches_mongo_js_1.launches
+const getAllHistoricLaunches = (pageNum, pageSize) => launches_mongo_1.launches
     .find({}, { _id: 0, __v: 0 })
     .sort('flightNumber')
     .skip(pageNum)
     .limit(pageSize);
 exports.getAllHistoricLaunches = getAllHistoricLaunches;
 const getLatestFlightNumber = () => __awaiter(void 0, void 0, void 0, function* () {
-    const latestLaunch = yield launches_mongo_js_1.launches.findOne().sort('-flightNumber');
+    const latestLaunch = yield launches_mongo_1.launches.findOne().sort('-flightNumber');
     if (!latestLaunch) {
         return DEFAULT_LAUNCH_NUM;
     }
-    return latestLaunch;
+    return latestLaunch === null || latestLaunch === void 0 ? void 0 : latestLaunch.flightNumber;
 });
 const getNextFlightNumber = () => __awaiter(void 0, void 0, void 0, function* () {
     const latestLaunch = yield getLatestFlightNumber();
     const incrementedFlightNumber = latestLaunch
-        ? latestLaunch.flightNumber + 1
+        ? latestLaunch + 1
         : DEFAULT_LAUNCH_NUM;
     return incrementedFlightNumber;
 });
 const postNewLaunch = (incomingLaunch) => __awaiter(void 0, void 0, void 0, function* () {
-    const isExistingPlanet = yield planets_mongo_js_1.planets.findOne({
+    const isExistingPlanet = yield planets_mongo_1.planets.findOne({
         keplerName: incomingLaunch.target,
     });
     if (!isExistingPlanet) {
@@ -113,7 +113,7 @@ const postNewLaunch = (incomingLaunch) => __awaiter(void 0, void 0, void 0, func
 });
 exports.postNewLaunch = postNewLaunch;
 const abortLaunch = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const abortedLaunch = yield launches_mongo_js_1.launches.updateOne({ flightNumber: id }, { upcoming: false, success: false });
+    const abortedLaunch = yield launches_mongo_1.launches.updateOne({ flightNumber: id }, { upcoming: false, success: false });
     return abortedLaunch.modifiedCount === 1;
 });
 exports.abortLaunch = abortLaunch;

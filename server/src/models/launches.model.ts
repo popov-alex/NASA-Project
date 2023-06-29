@@ -1,11 +1,26 @@
 import axios from 'axios';
 
-import { launches } from './launches.mongo.js';
-import { planets } from './planets.mongo.js';
+import { launches } from './launches.mongo';
+import { planets } from './planets.mongo';
 
-const DEFAULT_LAUNCH_NUM = 100;
+const SPACEX_LAUNCHES_ENDPOINT = 'https://api.spacexdata.com/v4/launches/query';
 
-const defaultLaunch = {
+const DEFAULT_LAUNCH_NUM: number = 100;
+
+interface Launch {
+  flightNumber: number;
+  launchDate: Date;
+  mission: string;
+  rocket: string;
+  customers: string[];
+  success: boolean;
+  upcoming: boolean;
+  target: string;
+}
+
+type LaunchWithoutTarget = Omit<Launch, 'target'>;
+
+const defaultLaunch: Launch = {
   flightNumber: 100,
   launchDate: new Date('June 27, 2023'),
   mission: 'Landing on Marse',
@@ -16,7 +31,7 @@ const defaultLaunch = {
   target: 'Kepler-442 b',
 };
 
-const saveLaunch = async (launch) => {
+const saveLaunch = async (launch: Launch | LaunchWithoutTarget) => {
   await launches.updateOne({ flightNumber: launch.flightNumber }, launch, {
     upsert: true,
   });
@@ -24,7 +39,20 @@ const saveLaunch = async (launch) => {
 
 saveLaunch(defaultLaunch);
 
-const SPACEX_LAUNCHES_ENDPOINT = 'https://api.spacexdata.com/v4/launches/query';
+type DocType = {
+  flight_number: number;
+  date_local: Date;
+  name: string;
+  rocket: {
+    name: string;
+  };
+  payloads: {
+    customers: string[];
+  }[];
+  success: boolean;
+  upcoming: boolean;
+};
+
 
 export const getSpaceXFlights = async () => {
   const response = await axios.post(SPACEX_LAUNCHES_ENDPOINT, {
@@ -55,10 +83,10 @@ export const getSpaceXFlights = async () => {
     throw new Error('Problem loading SpaceX launches');
   }
 
-  response.data.docs.map(async (doc) => {
+  response.data.docs.map(async (doc: DocType) => {
     const customers = doc.payloads.flatMap((payload) => payload.customers);
 
-    const launch = {
+    const launch: LaunchWithoutTarget = {
       flightNumber: doc.flight_number,
       launchDate: doc.date_local,
       mission: doc.name,
@@ -72,7 +100,7 @@ export const getSpaceXFlights = async () => {
   });
 };
 
-export const getAllHistoricLaunches = (pageNum, pageSize) =>
+export const getAllHistoricLaunches = (pageNum: number, pageSize: number) =>
   launches
     .find({}, { _id: 0, __v: 0 })
     .sort('flightNumber')
@@ -86,14 +114,14 @@ const getLatestFlightNumber = async () => {
     return DEFAULT_LAUNCH_NUM;
   }
 
-  return latestLaunch;
+  return latestLaunch?.flightNumber;
 };
 
 const getNextFlightNumber = async () => {
   const latestLaunch = await getLatestFlightNumber();
 
   const incrementedFlightNumber = latestLaunch
-    ? latestLaunch.flightNumber + 1
+    ? latestLaunch + 1
     : DEFAULT_LAUNCH_NUM;
 
   return incrementedFlightNumber;

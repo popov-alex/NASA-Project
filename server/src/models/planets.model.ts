@@ -25,7 +25,7 @@ export const savePlanets = async (planet) => {
   }
 };
 
-export const loadPlanets = () => {
+export const loadPlanets = (): Promise<void> => {
   return new Promise((resolve, reject) => {
     fs.createReadStream(path.join(process.cwd(), 'data', 'kepler_data.csv'))
       .pipe(

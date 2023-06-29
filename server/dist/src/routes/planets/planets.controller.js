@@ -11,7 +11,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.httpGetAllPlanets = void 0;
 const planets_model_js_1 = require("../../models/planets.model.js");
-const queryHelpers_js_1 = require("../../services/queryHelpers.js");
 const httpGetAllPlanets = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
     res.status(200).json(yield (0, planets_model_js_1.getAllPlanets)());
 });
