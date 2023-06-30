@@ -2,7 +2,6 @@ import axios from 'axios';
 
 import { launches } from './launches.mongo';
 import { planets } from './planets.mongo';
-import { log } from 'console';
 
 const SPACEX_LAUNCHES_ENDPOINT = 'https://api.spacexdata.com/v4/launches/query';
 
@@ -40,7 +39,7 @@ const saveLaunch = async (launch: Launch | LaunchWithoutTarget) => {
 
 saveLaunch(defaultLaunch);
 
-type DocType = {
+interface SpaceXLaunchDocType {
   flight_number: number;
   date_local: Date;
   name: string;
@@ -52,29 +51,44 @@ type DocType = {
   }[];
   success: boolean;
   upcoming: boolean;
-};
+}
+
+interface SpaceXApiResponse {
+  docs: SpaceXLaunchDocType[];
+}
+
+interface AxiosResponseFromSpaceX {
+  status: number;
+  statusText: string;
+  data: SpaceXApiResponse;
+}
 
 export const getSpaceXFlights = async () => {
-  const response = await axios.post(SPACEX_LAUNCHES_ENDPOINT, {
-    query: {},
-    options: {
-      limit: 20,
-      populate: [
-        {
-          path: 'rocket',
-          select: {
-            name: 1,
+  const response: AxiosResponseFromSpaceX = await axios.post(
+    SPACEX_LAUNCHES_ENDPOINT,
+    {
+      query: {},
+      options: {
+        limit: 20,
+        populate: [
+          {
+            path: 'rocket',
+            select: {
+              name: 1,
+            },
           },
-        },
-        {
-          path: 'payloads',
-          select: {
-            customers: 1,
+          {
+            path: 'payloads',
+            select: {
+              customers: 1,
+            },
           },
-        },
-      ],
-    },
-  });
+        ],
+      },
+    }
+  );
+
+  console.log(response.data);
 
   if (response.status !== 200) {
     console.error({
@@ -83,7 +97,7 @@ export const getSpaceXFlights = async () => {
     throw new Error('Problem loading SpaceX launches');
   }
 
-  response.data.docs.map(async (doc: DocType) => {
+  response.data.docs.map(async (doc: SpaceXLaunchDocType) => {
     const customers = doc.payloads.flatMap((payload) => payload.customers);
 
     const launch: LaunchWithoutTarget = {
@@ -127,9 +141,14 @@ const getNextFlightNumber = async () => {
   return incrementedFlightNumber;
 };
 
-export const postNewLaunch = async (incomingLaunch) => {
-  console.log(incomingLaunch);
-log
+interface IncomingLaunch {
+  launchDate: Date;
+  mission: string;
+  rocket: string;
+  target: string;
+}
+
+export const postNewLaunch = async (incomingLaunch: IncomingLaunch) => {
   const isExistingPlanet = await planets.findOne({
     keplerName: incomingLaunch.target,
   });
@@ -154,7 +173,7 @@ log
   }
 };
 
-export const abortLaunch = async (id) => {
+export const abortLaunch = async (id: number) => {
   const abortedLaunch = await launches.updateOne(
     { flightNumber: id },
     { upcoming: false, success: false }

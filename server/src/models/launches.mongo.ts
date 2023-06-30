@@ -1,6 +1,17 @@
 import mongoose from 'mongoose';
 
-const launchesSchema = new mongoose.Schema({
+interface LaunchesSchema {
+  flightNumber: number;
+  launchDate: Date;
+  mission: string;
+  rocket: string;
+  customers: string[];
+  success: boolean;
+  upcoming: boolean;
+  target: string;
+}
+
+const launchesSchema = new mongoose.Schema<LaunchesSchema>({
   flightNumber: Number,
   launchDate: Date,
   mission: String,
@@ -12,10 +23,9 @@ const launchesSchema = new mongoose.Schema({
 });
 
 Object.keys(launchesSchema.paths).forEach((path) => {
-  if(path !== 'target'){
-  launchesSchema.path(path).required(true)
-}
+  if (path !== 'target') {
+    launchesSchema.path(path).required(true);
+  }
 });
 
-export const launches = mongoose.model('Launch', launchesSchema)
-
+export const launches = mongoose.model('Launch', launchesSchema);

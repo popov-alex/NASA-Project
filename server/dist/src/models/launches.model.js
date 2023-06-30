@@ -34,6 +34,24 @@ const saveLaunch = (launch) => __awaiter(void 0, void 0, void 0, function* () {
     });
 });
 saveLaunch(defaultLaunch);
+// interface SpaceXApiResponse {
+//   docs: SpaceXLaunchDocType[];
+//   totalDocs: number;
+//   offset: number;
+//   limit: number;
+//   totalPages: number;
+//   page: number;
+//   pagingCounter: number;
+//   hasPrevPage: boolean;
+//   hasNextPage: boolean;
+//   prevPage: number | null;
+//   nextPage: number | null;
+// }
+// interface AxiosResponseFromSpaceX {
+//   status: number;
+//   statusText: string;
+//   data: SpaceXApiResponse;
+// }
 const getSpaceXFlights = () => __awaiter(void 0, void 0, void 0, function* () {
     const response = yield axios_1.default.post(SPACEX_LAUNCHES_ENDPOINT, {
         query: {},
@@ -55,6 +73,7 @@ const getSpaceXFlights = () => __awaiter(void 0, void 0, void 0, function* () {
             ],
         },
     });
+    console.log(response.data);
     if (response.status !== 200) {
         console.error({
             error: 'Not able to load SpaceX launches',
