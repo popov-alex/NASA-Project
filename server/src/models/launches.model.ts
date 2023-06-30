@@ -2,6 +2,7 @@ import axios from 'axios';
 
 import { launches } from './launches.mongo';
 import { planets } from './planets.mongo';
+import { log } from 'console';
 
 const SPACEX_LAUNCHES_ENDPOINT = 'https://api.spacexdata.com/v4/launches/query';
 
@@ -52,7 +53,6 @@ type DocType = {
   success: boolean;
   upcoming: boolean;
 };
-
 
 export const getSpaceXFlights = async () => {
   const response = await axios.post(SPACEX_LAUNCHES_ENDPOINT, {
@@ -128,6 +128,8 @@ const getNextFlightNumber = async () => {
 };
 
 export const postNewLaunch = async (incomingLaunch) => {
+  console.log(incomingLaunch);
+log
   const isExistingPlanet = await planets.findOne({
     keplerName: incomingLaunch.target,
   });
