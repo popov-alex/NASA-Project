@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-interface LaunchesSchema {
+export interface LaunchDocument {
   flightNumber: number;
   launchDate: Date;
   mission: string;
@@ -11,7 +11,7 @@ interface LaunchesSchema {
   target: string;
 }
 
-const launchesSchema = new mongoose.Schema<LaunchesSchema>({
+const launchesSchema = new mongoose.Schema<LaunchDocument>({
   flightNumber: Number,
   launchDate: Date,
   mission: String,
@@ -28,4 +28,7 @@ Object.keys(launchesSchema.paths).forEach((path) => {
   }
 });
 
-export const launches = mongoose.model('Launch', launchesSchema);
+export const launches = mongoose.model<LaunchDocument>(
+  'Launch',
+  launchesSchema
+);

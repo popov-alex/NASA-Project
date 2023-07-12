@@ -1,7 +1,11 @@
-import mongoose from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 
-const planetsSchema = new mongoose.Schema({
-  keplerName: { type: String, required: Boolean },
+export interface PlanetDocument extends Document {
+  keplerName: string;
+}
+
+const planetsSchema = new mongoose.Schema<PlanetDocument>({
+  keplerName: { type: String, required: true },
 });
 
-export const planets = mongoose.model('Planet', planetsSchema);
+export const planets = mongoose.model<PlanetDocument>('Planet', planetsSchema);

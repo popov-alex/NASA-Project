@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-import { launches } from './launches.mongo';
-import { planets } from './planets.mongo';
+import { LaunchDocument, launches } from './launches.mongo';
+import { PlanetDocument, planets } from './planets.mongo';
 
 const SPACEX_LAUNCHES_ENDPOINT = 'https://api.spacexdata.com/v4/launches/query';
 
@@ -88,8 +88,6 @@ export const getSpaceXFlights = async () => {
     }
   );
 
-  console.log(response.data);
-
   if (response.status !== 200) {
     console.error({
       error: 'Not able to load SpaceX launches',
@@ -114,15 +112,23 @@ export const getSpaceXFlights = async () => {
   });
 };
 
-export const getAllHistoricLaunches = (pageNum: number, pageSize: number) =>
-  launches
+export const getAllHistoricLaunches = async (
+  pageNum: number,
+  pageSize: number
+) => {
+  const historicLaunches: LaunchDocument[] = await launches
     .find({}, { _id: 0, __v: 0 })
     .sort('flightNumber')
     .skip(pageNum)
     .limit(pageSize);
 
+  return historicLaunches;
+};
+
 const getLatestFlightNumber = async () => {
-  const latestLaunch = await launches.findOne().sort('-flightNumber');
+  const latestLaunch: LaunchDocument | null = await launches
+    .findOne()
+    .sort('-flightNumber');
 
   if (!latestLaunch) {
     return DEFAULT_LAUNCH_NUM;
@@ -132,7 +138,7 @@ const getLatestFlightNumber = async () => {
 };
 
 const getNextFlightNumber = async () => {
-  const latestLaunch = await getLatestFlightNumber();
+  const latestLaunch: number = await getLatestFlightNumber();
 
   const incrementedFlightNumber = latestLaunch
     ? latestLaunch + 1
@@ -149,7 +155,7 @@ interface IncomingLaunch {
 }
 
 export const postNewLaunch = async (incomingLaunch: IncomingLaunch) => {
-  const isExistingPlanet = await planets.findOne({
+  const isExistingPlanet: PlanetDocument | null = await planets.findOne({
     keplerName: incomingLaunch.target,
   });
 
