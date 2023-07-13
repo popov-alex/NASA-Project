@@ -147,8 +147,8 @@ const getNextFlightNumber = async () => {
   return incrementedFlightNumber;
 };
 
-interface IncomingLaunch {
-  launchDate: Date;
+export interface IncomingLaunch {
+  launchDate: number;
   mission: string;
   rocket: string;
   target: string;
@@ -163,13 +163,13 @@ export const postNewLaunch = async (incomingLaunch: IncomingLaunch) => {
     throw new Error("Planet's name should be from the approved list");
   }
 
-  const newLaunch = {
+  const newLaunch: Launch = {
+    ...incomingLaunch,
     flightNumber: await getNextFlightNumber(),
     customers: defaultLaunch.customers,
     success: true,
     upcoming: true,
     launchDate: new Date(incomingLaunch.launchDate),
-    ...incomingLaunch,
   };
 
   try {

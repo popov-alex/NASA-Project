@@ -1,11 +1,16 @@
+import { Request, Response } from 'express';
 import {
+  IncomingLaunch,
   abortLaunch,
   getAllHistoricLaunches,
   postNewLaunch,
 } from '../../models/launches.model.js';
 import { getPagination } from '../../services/queryHelpers.js';
 
-export const httpGetAllHistoricLaunches = async (req, res) => {
+export const httpGetAllHistoricLaunches = async (
+  req: Request,
+  res: Response
+) => {
   const { size, num } = req.query;
 
   const { pageSkip, pageSize } = getPagination(size, num);
@@ -13,8 +18,8 @@ export const httpGetAllHistoricLaunches = async (req, res) => {
   res.status(200).json(await getAllHistoricLaunches(pageSkip, pageSize));
 };
 
-export const httpPostNewLaunch = async (req, res) => {
-  const newLaunch = req.body;
+export const httpPostNewLaunch = async (req: Request, res: Response) => {
+  const newLaunch: IncomingLaunch = req.body;
 
   if (
     !newLaunch.mission ||
@@ -36,12 +41,12 @@ export const httpPostNewLaunch = async (req, res) => {
   return res.status(201).json(newLaunch);
 };
 
-export const httpAbortLaunch = async (req, res) => {
+export const httpAbortLaunch = async (req: Request, res: Response) => {
   const id = +req.params.id;
 
   const aborted = await abortLaunch(id);
   if (!aborted) {
-    return res.send(400).json({
+    return res.status(400).json({
       error: 'Launch was not aborted',
     });
   }

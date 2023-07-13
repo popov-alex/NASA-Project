@@ -1,7 +1,20 @@
-const DEFAULT_PAGE_NUM = 1;
-const DEFAULT_PAGE_SIZE = 0;
+import QueryString from 'qs';
 
-export const getPagination = (size, num) => {
+const DEFAULT_PAGE_NUM = 1;
+const DEFAULT_PAGE_SIZE = 10;
+
+type ArgsType =
+  | string
+  | QueryString.ParsedQs
+  | string[]
+  | QueryString.ParsedQs[];
+
+type ReturnObject = {
+  pageSkip: number;
+  pageSize: number;
+};
+
+export const getPagination = (size: ArgsType, num: ArgsType): ReturnObject => {
   const pageSize = Number(size) || DEFAULT_PAGE_SIZE;
   const pageNum = Number(num) || DEFAULT_PAGE_NUM;
 
