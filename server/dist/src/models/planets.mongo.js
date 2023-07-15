@@ -6,6 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.planets = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const planetsSchema = new mongoose_1.default.Schema({
-    keplerName: { type: String, required: Boolean },
+    keplerName: { type: String, required: true },
 });
 exports.planets = mongoose_1.default.model('Planet', planetsSchema);

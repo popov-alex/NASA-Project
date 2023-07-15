@@ -76,14 +76,19 @@ const getSpaceXFlights = () => __awaiter(void 0, void 0, void 0, function* () {
     }));
 });
 exports.getSpaceXFlights = getSpaceXFlights;
-const getAllHistoricLaunches = (pageNum, pageSize) => launches_mongo_1.launches
-    .find({}, { _id: 0, __v: 0 })
-    .sort('flightNumber')
-    .skip(pageNum)
-    .limit(pageSize);
+const getAllHistoricLaunches = (pageNum, pageSize) => __awaiter(void 0, void 0, void 0, function* () {
+    const historicLaunches = yield launches_mongo_1.launches
+        .find({}, { _id: 0, __v: 0 })
+        .sort('flightNumber')
+        .skip(pageNum)
+        .limit(pageSize);
+    return historicLaunches;
+});
 exports.getAllHistoricLaunches = getAllHistoricLaunches;
 const getLatestFlightNumber = () => __awaiter(void 0, void 0, void 0, function* () {
-    const latestLaunch = yield launches_mongo_1.launches.findOne().sort('-flightNumber');
+    const latestLaunch = yield launches_mongo_1.launches
+        .findOne()
+        .sort('-flightNumber');
     if (!latestLaunch) {
         return DEFAULT_LAUNCH_NUM;
     }
@@ -103,7 +108,7 @@ const postNewLaunch = (incomingLaunch) => __awaiter(void 0, void 0, void 0, func
     if (!isExistingPlanet) {
         throw new Error("Planet's name should be from the approved list");
     }
-    const newLaunch = Object.assign({ flightNumber: yield getNextFlightNumber(), customers: defaultLaunch.customers, success: true, upcoming: true, launchDate: new Date(incomingLaunch.launchDate) }, incomingLaunch);
+    const newLaunch = Object.assign(Object.assign({}, incomingLaunch), { flightNumber: yield getNextFlightNumber(), customers: defaultLaunch.customers, success: true, upcoming: true, launchDate: new Date(incomingLaunch.launchDate) });
     try {
         yield saveLaunch(newLaunch);
     }

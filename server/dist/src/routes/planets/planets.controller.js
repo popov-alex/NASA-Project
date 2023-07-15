@@ -10,8 +10,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.httpGetAllPlanets = void 0;
-const planets_model_js_1 = require("../../models/planets.model.js");
-const httpGetAllPlanets = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.status(200).json(yield (0, planets_model_js_1.getAllPlanets)());
-});
+const planets_model_1 = require("models/planets.model");
+const httpGetAllPlanets = (_req, res) => __awaiter(void 0, void 0, void 0, function* () { return res.status(200).json(yield (0, planets_model_1.getAllPlanets)()); });
 exports.httpGetAllPlanets = httpGetAllPlanets;

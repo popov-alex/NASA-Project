@@ -10,16 +10,17 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.httpAbortLaunch = exports.httpPostNewLaunch = exports.httpGetAllHistoricLaunches = void 0;
-const launches_model_js_1 = require("../../models/launches.model.js");
-const queryHelpers_js_1 = require("../../services/queryHelpers.js");
+const launches_model_1 = require("../../models/launches.model");
+const queryHelpers_1 = require("services/queryHelpers");
 const httpGetAllHistoricLaunches = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { size, num } = req.query;
-    const { pageSkip, pageSize } = (0, queryHelpers_js_1.getPagination)(size, num);
-    res.status(200).json(yield (0, launches_model_js_1.getAllHistoricLaunches)(pageSkip, pageSize));
+    const { pageSkip, pageSize } = (0, queryHelpers_1.getPagination)(size, num);
+    res.status(200).json(yield (0, launches_model_1.getAllHistoricLaunches)(pageSkip, pageSize));
 });
 exports.httpGetAllHistoricLaunches = httpGetAllHistoricLaunches;
 const httpPostNewLaunch = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const newLaunch = req.body;
+    console.log(newLaunch);
     if (!newLaunch.mission ||
         !newLaunch.target ||
         !newLaunch.launchDate ||
@@ -33,15 +34,15 @@ const httpPostNewLaunch = (req, res) => __awaiter(void 0, void 0, void 0, functi
             error: 'Please provide the correct date',
         });
     }
-    yield (0, launches_model_js_1.postNewLaunch)(newLaunch);
+    yield (0, launches_model_1.postNewLaunch)(newLaunch);
     return res.status(201).json(newLaunch);
 });
 exports.httpPostNewLaunch = httpPostNewLaunch;
 const httpAbortLaunch = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = +req.params.id;
-    const aborted = yield (0, launches_model_js_1.abortLaunch)(id);
+    const aborted = yield (0, launches_model_1.abortLaunch)(id);
     if (!aborted) {
-        return res.send(400).json({
+        return res.status(400).json({
             error: 'Launch was not aborted',
         });
     }

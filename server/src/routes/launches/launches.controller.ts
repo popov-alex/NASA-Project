@@ -1,11 +1,12 @@
 import { Request, Response } from 'express';
+
 import {
   IncomingLaunch,
   abortLaunch,
   getAllHistoricLaunches,
   postNewLaunch,
-} from '../../models/launches.model.js';
-import { getPagination } from '../../services/queryHelpers.js';
+} from '../../models/launches.model';
+import { getPagination } from 'services/queryHelpers';
 
 export const httpGetAllHistoricLaunches = async (
   req: Request,
@@ -20,6 +21,7 @@ export const httpGetAllHistoricLaunches = async (
 
 export const httpPostNewLaunch = async (req: Request, res: Response) => {
   const newLaunch: IncomingLaunch = req.body;
+  console.log(newLaunch);
 
   if (
     !newLaunch.mission ||

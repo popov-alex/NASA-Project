@@ -1,7 +1,7 @@
 import QueryString from 'qs';
 
 const DEFAULT_PAGE_NUM = 1;
-const DEFAULT_PAGE_SIZE = 10;
+const DEFAULT_PAGE_SIZE = 0;
 
 type ArgsType =
   | string
