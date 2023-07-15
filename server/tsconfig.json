@@ -28,10 +28,10 @@
     "module": "CommonJS" /* Specify what module code is generated. */,
     // "rootDir": "./",                                  /* Specify the root folder within your source files. */
     // "moduleResolution": "node10",                     /* Specify how TypeScript looks up a file from a given module specifier. */
-    "baseUrl": "./", /* This sets your base url as the root of your 'server' folder */
-    "paths": {
-      "*" : ["src/*", "data/*"] /* This allows you to import from 'src' and 'data' folders */
-    },
+    // "baseUrl": "./", /* This sets your base url as the root of your 'server' folder */
+    // "paths": {
+    //   "*" : ["src/*", "data/*"] /* This allows you to import from 'src' and 'data' folders */
+    // },
     // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
     // "typeRoots": [],                                  /* Specify multiple folders that act like './node_modules/@types'. */
     // "types": [],                                      /* Specify type package names to be included without being referenced in a source file. */

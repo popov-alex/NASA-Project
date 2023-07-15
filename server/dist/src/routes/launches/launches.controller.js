@@ -8,19 +8,23 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.httpAbortLaunch = exports.httpPostNewLaunch = exports.httpGetAllHistoricLaunches = void 0;
-const launches_model_1 = require("../../models/launches.model");
-const queryHelpers_1 = require("services/queryHelpers");
-const httpGetAllHistoricLaunches = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.launchesRouter = void 0;
+const express_1 = __importDefault(require("express"));
+const queryHelpers_1 = require("../../common/queryHelpers");
+const launches_service_1 = require("./launches.service");
+exports.launchesRouter = express_1.default.Router();
+exports.launchesRouter.get('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { size, num } = req.query;
     const { pageSkip, pageSize } = (0, queryHelpers_1.getPagination)(size, num);
-    res.status(200).json(yield (0, launches_model_1.getAllHistoricLaunches)(pageSkip, pageSize));
-});
-exports.httpGetAllHistoricLaunches = httpGetAllHistoricLaunches;
-const httpPostNewLaunch = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const allLaunches = yield (0, launches_service_1.getAllHistoricLaunches)(pageSkip, pageSize);
+    res.status(200).json(allLaunches);
+}));
+exports.launchesRouter.post('/', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const newLaunch = req.body;
-    console.log(newLaunch);
     if (!newLaunch.mission ||
         !newLaunch.target ||
         !newLaunch.launchDate ||
@@ -34,13 +38,12 @@ const httpPostNewLaunch = (req, res) => __awaiter(void 0, void 0, void 0, functi
             error: 'Please provide the correct date',
         });
     }
-    yield (0, launches_model_1.postNewLaunch)(newLaunch);
-    return res.status(201).json(newLaunch);
-});
-exports.httpPostNewLaunch = httpPostNewLaunch;
-const httpAbortLaunch = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const newLaunchResult = yield (0, launches_service_1.postNewLaunch)(newLaunch);
+    return res.status(201).json(newLaunchResult);
+}));
+exports.launchesRouter.delete('/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const id = +req.params.id;
-    const aborted = yield (0, launches_model_1.abortLaunch)(id);
+    const aborted = yield (0, launches_service_1.abortLaunch)(id);
     if (!aborted) {
         return res.status(400).json({
             error: 'Launch was not aborted',
@@ -49,5 +52,4 @@ const httpAbortLaunch = (req, res) => __awaiter(void 0, void 0, void 0, function
     return res.status(200).json({
         success: `Successfully aborted launch with flightNumber ${id}`,
     });
-});
-exports.httpAbortLaunch = httpAbortLaunch;
+}));

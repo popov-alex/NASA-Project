@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.abortLaunch = exports.postNewLaunch = exports.getAllHistoricLaunches = exports.getSpaceXFlights = void 0;
+exports.abortLaunch = exports.postNewLaunch = exports.getSpaceXFlights = void 0;
 const axios_1 = __importDefault(require("axios"));
 const launches_mongo_1 = require("./launches.mongo");
 const planets_mongo_1 = require("./planets.mongo");
@@ -76,15 +76,6 @@ const getSpaceXFlights = () => __awaiter(void 0, void 0, void 0, function* () {
     }));
 });
 exports.getSpaceXFlights = getSpaceXFlights;
-const getAllHistoricLaunches = (pageNum, pageSize) => __awaiter(void 0, void 0, void 0, function* () {
-    const historicLaunches = yield launches_mongo_1.launches
-        .find({}, { _id: 0, __v: 0 })
-        .sort('flightNumber')
-        .skip(pageNum)
-        .limit(pageSize);
-    return historicLaunches;
-});
-exports.getAllHistoricLaunches = getAllHistoricLaunches;
 const getLatestFlightNumber = () => __awaiter(void 0, void 0, void 0, function* () {
     const latestLaunch = yield launches_mongo_1.launches
         .findOne()

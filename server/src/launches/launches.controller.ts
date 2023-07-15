@@ -1,27 +1,26 @@
-import { Request, Response } from 'express';
+import express, { Request, Response } from 'express';
 
+import { getPagination } from '../common/queryHelpers';
 import {
   IncomingLaunch,
   abortLaunch,
   getAllHistoricLaunches,
   postNewLaunch,
-} from '../../models/launches.model';
-import { getPagination } from 'services/queryHelpers';
+} from './launches.service';
 
-export const httpGetAllHistoricLaunches = async (
-  req: Request,
-  res: Response
-) => {
+export const launchesRouter = express.Router();
+
+launchesRouter.get('/', async (req: Request, res: Response) => {
   const { size, num } = req.query;
-
   const { pageSkip, pageSize } = getPagination(size, num);
 
-  res.status(200).json(await getAllHistoricLaunches(pageSkip, pageSize));
-};
+  const allLaunches = await getAllHistoricLaunches(pageSkip, pageSize);
 
-export const httpPostNewLaunch = async (req: Request, res: Response) => {
+  res.status(200).json(allLaunches);
+});
+
+launchesRouter.post('/', async (req: Request, res: Response) => {
   const newLaunch: IncomingLaunch = req.body;
-  console.log(newLaunch);
 
   if (
     !newLaunch.mission ||
@@ -38,12 +37,12 @@ export const httpPostNewLaunch = async (req: Request, res: Response) => {
     });
   }
 
-  await postNewLaunch(newLaunch);
+  const newLaunchResult = await postNewLaunch(newLaunch);
 
-  return res.status(201).json(newLaunch);
-};
+  return res.status(201).json(newLaunchResult);
+});
 
-export const httpAbortLaunch = async (req: Request, res: Response) => {
+launchesRouter.delete('/:id', async (req: Request, res: Response) => {
   const id = +req.params.id;
 
   const aborted = await abortLaunch(id);
@@ -56,4 +55,4 @@ export const httpAbortLaunch = async (req: Request, res: Response) => {
   return res.status(200).json({
     success: `Successfully aborted launch with flightNumber ${id}`,
   });
-};
+});

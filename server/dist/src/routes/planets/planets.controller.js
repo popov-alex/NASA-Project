@@ -8,8 +8,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.httpGetAllPlanets = void 0;
-const planets_model_1 = require("models/planets.model");
-const httpGetAllPlanets = (_req, res) => __awaiter(void 0, void 0, void 0, function* () { return res.status(200).json(yield (0, planets_model_1.getAllPlanets)()); });
-exports.httpGetAllPlanets = httpGetAllPlanets;
+exports.planetsRouter = void 0;
+const express_1 = __importDefault(require("express"));
+const planets_service_1 = require("./planets.service");
+exports.planetsRouter = express_1.default.Router();
+exports.planetsRouter.get('/', (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const planets = yield (0, planets_service_1.getAllPlanets)();
+    res.status(200).json(planets);
+}));

@@ -1,12 +1,24 @@
 import axios from 'axios';
 
 import { LaunchDocument, launches } from './launches.mongo';
-import { PlanetDocument, planets } from './planets.mongo';
+import { PlanetDocument, planets } from '../planets/planets.mongo';
+
+export const getAllHistoricLaunches = async (
+  pageNum: number,
+  pageSize: number
+) => {
+  const historicLaunches: LaunchDocument[] = await launches
+    .find({}, { _id: 0, __v: 0 })
+    .sort('flightNumber')
+    .skip(pageNum)
+    .limit(pageSize);
+
+  return historicLaunches;
+};
 
 const SPACEX_LAUNCHES_ENDPOINT = 'https://api.spacexdata.com/v4/launches/query';
 
 const DEFAULT_LAUNCH_NUM: number = 100;
-
 interface Launch {
   flightNumber: number;
   launchDate: Date;
@@ -110,19 +122,6 @@ export const getSpaceXFlights = async () => {
 
     await saveLaunch(launch);
   });
-};
-
-export const getAllHistoricLaunches = async (
-  pageNum: number,
-  pageSize: number
-) => {
-  const historicLaunches: LaunchDocument[] = await launches
-    .find({}, { _id: 0, __v: 0 })
-    .sort('flightNumber')
-    .skip(pageNum)
-    .limit(pageSize);
-
-  return historicLaunches;
 };
 
 const getLatestFlightNumber = async () => {

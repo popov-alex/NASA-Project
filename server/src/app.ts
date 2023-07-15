@@ -3,8 +3,8 @@ import path from 'path';
 import cors from 'cors';
 import morgan from 'morgan';
 
-import { planetsRouter } from './routes/planets/planets.router';
-import { launchesRouter } from './routes/launches/launches.router';
+import { planetsRouter } from './planets/planets.controller';
+import { launchesRouter } from './launches/launches.controller';
 
 export const app = express();
 

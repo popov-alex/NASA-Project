@@ -1,10 +1,10 @@
 import http from 'http';
 import dotenv from 'dotenv';
 
-import { mongoConnect } from './src/services/mongo';
+import { mongoConnect } from './src/common/mongo';
 import { app } from './src/app';
-import { loadPlanets } from './src/models/planets.model';
-import { getSpaceXFlights } from './src/models/launches.model';
+import { loadPlanets } from './src/planets/planets.service';
+import { getSpaceXFlights } from './src/launches/launches.service';
 
 dotenv.config({ path: __dirname + '/../.env' });
 
