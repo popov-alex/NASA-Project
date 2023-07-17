@@ -1,8 +1,17 @@
-import { useMemo } from 'react';
+import React, { FormEvent, useMemo } from 'react';
 import { Appear, Button, Loading, Paragraph } from 'arwes';
-import Clickable from '../components/Clickable';
 
-const Launch = (props) => {
+import Clickable from '../components/Clickable';
+import { Planet } from './AppLayout';
+
+interface LaunchProps {
+  entered: boolean;
+  planets?: Planet[];
+  submitLaunch: (e: FormEvent<HTMLFormElement>) => void;
+  isPendingLaunch: boolean;
+}
+
+const Launch = (props: LaunchProps) => {
   const selectorBody = useMemo(() => {
     return props.planets?.map((planet) => (
       <option value={planet.keplerName} key={planet.keplerName}>

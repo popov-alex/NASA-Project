@@ -1,12 +1,15 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { httpGetPlanets } from './requests';
+import { Planet } from '../pages/AppLayout';
 
-function usePlanets() {
-  const [planets, savePlanets] = useState([]);
+type usePlanetsReturnType = Planet[];
+
+const usePlanets = (): usePlanetsReturnType => {
+  const [planets, savePlanets] = useState<Planet[]>([]);
 
   const getPlanets = useCallback(async () => {
-    const fetchedPlanets = await httpGetPlanets();
+    const fetchedPlanets: Planet[] = await httpGetPlanets();
     savePlanets(fetchedPlanets);
   }, []);
 
@@ -15,6 +18,6 @@ function usePlanets() {
   }, [getPlanets]);
 
   return planets;
-}
+};
 
 export default usePlanets;

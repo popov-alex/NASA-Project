@@ -1,3 +1,5 @@
+import React from "react";
+
 import {
   BrowserRouter as Router,
 } from "react-router-dom";
@@ -13,11 +15,15 @@ import AppLayout from "./pages/AppLayout";
 
 import { theme, resources, sounds } from "./settings";
 
+interface Anim {
+  entered: boolean;
+}
+
 const App = () => {
   return <ThemeProvider theme={createTheme(theme)}>
     <SoundsProvider sounds={createSounds(sounds)}>
       <Arwes animate background={resources.background.large} pattern={resources.pattern}>
-        {anim => (
+        {(anim: Anim) => (
           <Router>
             <AppLayout show={anim.entered} />
           </Router>

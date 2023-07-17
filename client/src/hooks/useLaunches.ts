@@ -1,13 +1,25 @@
 import { useCallback, useEffect, useState } from 'react';
 
 import { httpGetLaunches, httpSubmitLaunch, httpAbortLaunch } from './requests';
+import { RocketLaunch } from '../pages/AppLayout';
 
-function useLaunches(onSuccessSound, onAbortSound, onFailureSound) {
-  const [launches, saveLaunches] = useState([]);
+type useLaunchesReturnType = {
+  launches: RocketLaunch[];
+  isPendingLaunch: boolean;
+  submitLaunch: (e: React.FormEvent<HTMLFormElement>) => void;
+  abortLaunch: (flightNumber: number) => void;
+};
+
+const useLaunches = (
+  onSuccessSound,
+  onAbortSound,
+  onFailureSound
+): useLaunchesReturnType => {
+  const [launches, saveLaunches] = useState<RocketLaunch[]>([]);
   const [isPendingLaunch, setPendingLaunch] = useState(false);
 
   const getLaunches = useCallback(async () => {
-    const fetchedLaunches = await httpGetLaunches();
+    const fetchedLaunches: RocketLaunch[] = await httpGetLaunches();
     saveLaunches(fetchedLaunches);
   }, []);
 
@@ -16,14 +28,17 @@ function useLaunches(onSuccessSound, onAbortSound, onFailureSound) {
   }, [getLaunches]);
 
   const submitLaunch = useCallback(
-    async (e) => {
+    async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       setPendingLaunch(true);
-      const data = new FormData(e.target);
-      const launchDate = new Date(data.get('launch-day'));
-      const mission = data.get('mission-name');
-      const rocket = data.get('rocket-name');
-      const target = data.get('planets-selector');
+      const data = new FormData(e.target as HTMLFormElement);
+
+      const launchDateString = data.get('launch-day') as string;
+      const launchDate = launchDateString ? new Date(launchDateString) : null;
+
+      const mission = data.get('mission-name') as string;
+      const rocket = data.get('rocket-name') as string;
+      const target = data.get('planets-selector') as string;
       const response = await httpSubmitLaunch({
         launchDate,
         mission,
@@ -46,7 +61,7 @@ function useLaunches(onSuccessSound, onAbortSound, onFailureSound) {
   );
 
   const abortLaunch = useCallback(
-    async (id) => {
+    async (id: number) => {
       const response = await httpAbortLaunch(id);
 
       const success = response.ok;
@@ -66,6 +81,6 @@ function useLaunches(onSuccessSound, onAbortSound, onFailureSound) {
     submitLaunch,
     abortLaunch,
   };
-}
+};
 
 export default useLaunches;
